@@ -17,7 +17,7 @@ export default createGlobalStyle`
 
   /* Cor de fundo padrão e global utilizado em toda as paginas. */
   body {
-    background: #7159C1;
+    background:  #7159c1;
     -webkit-font-smoothing: antialiased !important
   }
 
