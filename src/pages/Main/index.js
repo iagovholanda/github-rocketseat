@@ -14,6 +14,7 @@ export default class Main extends Component {
     repositories: [],
     /* Disabling button during loading. */
     loading: false,
+    error: null,
   };
 
   /* Carregamento dos dados no localStorage. */
@@ -59,31 +60,44 @@ export default class Main extends Component {
   handleSubmit = async e => {
     e.preventDefault();
 
-    /* Antes dele fazer a chamada a API */
-    this.setState({ loading: true });
+    this.setState({ loading: true, error: false });
 
-    const { newRepo, repositories } = this.state;
+    try {
+      const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`repos/${newRepo}`);
+      /* Se o repositório se encontrar como vazio, o mesmo é retornado
+      um erro, informando que o usuário deve informar que um repositório
+      deve ser informado. */
+      if (newRepo === '') throw 'Você precisa indicar um repositório';
 
-    /* Retornando apenas algumas informações especificas. */
-    const data = {
-      name: response.data.full_name,
-    };
+      /* Ao informar o repositório, ele buscar o mesmo dentro do estado state
+      repositories e verifica se o repositório passado, ja não esta presente
+      dentro do deste estado. */
+      const hasRepo = repositories.find(r => r.name === newRepo);
 
-    /* Toda vez que o usuário adicionar um novo repositório, ele vai manter
-    a listagem atual de repositorios, passando todas as informações que existem
-    dentro de repositories e adicionando um novo elemento, criando um novo array. */
-    this.setState({
-      repositories: [...repositories, data],
-      /* Depois de adicionar o novo repositorio passado, eu limpo a variavel newRepo. */
-      newRepo: '',
-      loading: false,
-    });
+      /* Onde esta verificação é realizada, e retornado um erro para o usuário
+      caso o mesmo seja encontrado. */
+      if (hasRepo) throw 'Repositório duplicado';
+
+      const response = await api.get(`/repos/${newRepo}`);
+
+      const data = {
+        name: response.data.full_name,
+      };
+
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+      });
+    } catch (error) {
+      this.setState({ error: true });
+    } finally {
+      this.setState({ loading: false });
+    }
   };
 
   render() {
-    const { newRepo, loading, repositories } = this.state;
+    const { newRepo, loading, repositories, error } = this.state;
 
     return (
       <Container>
@@ -92,7 +106,7 @@ export default class Main extends Component {
           Repositório
         </h1>
 
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} error={error}>
           <input
             type="text"
             placeholder="Adicionar repositório"

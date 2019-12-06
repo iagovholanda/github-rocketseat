@@ -8,7 +8,10 @@ export const Form = styled.form`
 
   input {
     flex: 1;
-    border: 1px solid #eee;
+    /* Mexendo nas propiedades de error. Caso error seja encontrar
+    o input recebe borda vermelha, caso não seja encontrar a borda
+    fica branca. */
+    border: 1px solid ${props => (props.error ? '#ff6b6b' : '#eee')};
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 16px;

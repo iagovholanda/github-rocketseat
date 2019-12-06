@@ -18,6 +18,7 @@ module.exports = {
   },
   plugins: ['react', 'prettier'],
   rules: {
+    'no-throw-literal': 'off',
     'react/static-property-placement': 'off',
     'react/state-in-constructor': 'off',
     'prettier/prettier': 'error',
