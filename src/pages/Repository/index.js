@@ -30,6 +30,7 @@ export default class Repository extends Component {
       { state: 'closed', label: 'Fechadas', active: false },
     ],
     filterIndex: 0,
+    page: 1,
   };
 
   async componentDidMount() {
@@ -83,6 +84,26 @@ export default class Repository extends Component {
     /* Recuperar o nome do repositorio através do propriedade match
     params, recuperando o nome do repositorio.
     const repoName = decodeURIComponent(match.params.repository); */
+  };
+
+  /* Ao clicar no filtro criado, retornar todas as issues referente ao filtro. */
+  handleFilterClick = async filterIndex => {
+    /* Vou receber o filterIndex, que é a posição do filter. */
+    await this.setState({ filterIndex });
+    /* Atualiza depois a issues, de acordo com o filter. */
+    this.loadIssues();
+  };
+
+  /* O handlePage recebe ma action, no qual você vai verificar se a action referece
+  a ação de voltar ou passar a paginação. Caso seja back, o mesmo vai pegar o numero
+  da pagina e diminuir -1, caso o contrario o mesmo vai somar uma pagina para passar
+  uma pagina. */
+  handlePage = async action => {
+    const { page } = this.state;
+    await this.setState({
+      page: action === 'back' ? page - 1 : page + 1,
+    });
+    this.loadIssues();
   };
 
   render() {
